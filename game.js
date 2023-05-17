@@ -13,7 +13,6 @@ const ManagerEat = new EatSnakeManager(x, y);
 const ManagerSnake = new SnakeManager(x, y, ManagerEat);
 ManagerSnake.movSnake();
 ManagerEat.eatSpawn();
-ManagerSnake.eatPos();
 
 let Mapsnake = (x, y, width, height, color) => {
   Figures.createRect(x, y, width, height, color);
