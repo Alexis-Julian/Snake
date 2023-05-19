@@ -7,7 +7,7 @@ export default class SnakeManager {
     this.x = x;
     this.y = y;
     /* Puntos en movimiento */
-    this.points = [{ x: this.x - 20, y: this.y }];
+    this.points = [{ x: this.x, y: this.y + 20 }];
   }
   Snake(headSnake) {
     headSnake(this.x, this.y, 10, "green");
@@ -19,59 +19,101 @@ export default class SnakeManager {
   movSnake() {
     let ultkey = null;
     let aux = null;
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", ({ key }) => {
       aux = ultkey;
-      ultkey = e.keyCode;
+      ultkey = key;
       if (ultkey != aux) this.MovPoints(ultkey);
     });
     setInterval(() => {
-      if (ultkey === 37 && aux != 39) {
+      if (ultkey === "ArrowLeft" && aux != "ArrowRight") {
         /* KeyLeft */
         this.x = this.x - 1.0;
-        this.points[0].x -= 1;
-      } else if (ultkey === 39 && aux != 37) {
+      } else if (ultkey === "ArrowRight" && aux != "ArrowLeft") {
         /* KeyRight */
         this.x = this.x + 1.0;
-      } else if (ultkey === 38 && aux != 40) {
+      } else if (ultkey === "ArrowUp" && aux != "ArrowDown") {
         /* KeyUp */
         this.y = this.y - 1.0;
-      } else if (ultkey === 40 && aux != 38) {
+      } else if (ultkey === "ArrowDown" && aux != "ArrowUp") {
         /* KeyDown */
         this.y = this.y + 1.0;
-        this.points[0].y += 1;
       } else {
         ultkey = aux;
       }
-
       this.ValidationPoint();
+      this.MovPoints(ultkey, aux);
     }, 1000 / 60);
-    console.log("123");
   }
-  MovPoints(ultkey) {
-    let c = 0;
+  MovPoints(ultkey, antkey) {
     this.points.map((e) => {
-      if (ultkey === 40) {
-        let radio = setInterval(() => {
-          e.x = e.x + 1;
-          e.y = e.y - 1;
-          c++;
-          if (c === 20) {
-            clearInterval(radio);
+      if (ultkey === "ArrowUp") {
+        const centro = e.y - 20;
+        let punto = this.y + 10;
+        let distance = Math.sqrt((this.x - e.x) ** 2 + (punto - centro) ** 2);
+        if (distance > 9 && distance < 11) {
+          e.y -= +1;
+        } else if (distance < 9) {
+          console.log("Interior");
+        } else {
+          if (antkey == "ArrowRight") {
+            e.x += 1;
+          } else if (antkey == "ArrowLeft") {
+            e.x -= 1;
           }
-        }, 1000 / 60);
-      } else if (ultkey === 37) {
-        let radio = setInterval(() => {
-          e.y += 1;
+        }
+      } else if (ultkey == "ArrowRight") {
+        const centro = e.x + 20;
+        const punto = this.x - 10;
+        let distance = Math.sqrt((punto - centro) ** 2 + (this.y - e.y) ** 2);
+        distance = Math.floor(distance);
+        if (distance > 9 && distance < 11) {
+          e.x -= -1;
+        } else if (distance < 9) {
           e.x += 1;
-          c++;
-          if (c === 20) {
-            clearInterval(radio);
+        } else {
+          if (antkey == "ArrowDown") {
+            e.y += 1;
+          } else if (antkey === "ArrowUp") {
+            e.y -= 1;
           }
-        }, 1000 / 60);
+        }
+      } else if (ultkey == "ArrowLeft") {
+        let centro;
+        let punto;
+        centro = e.x - 20;
+        punto = this.x + 10;
+        let distance = Math.sqrt((punto - centro) ** 2 + (this.y - e.y) ** 2);
+        distance = Math.floor(distance);
+        if (distance > 9 && distance < 11) {
+          e.x += -1;
+        } else if (distance < 9) {
+          e.x -= 1;
+        } else {
+          if (antkey == "ArrowDown") {
+            e.y += 1;
+          } else if (antkey === "ArrowUp") {
+            e.y -= 1;
+          }
+        }
+      } else if (ultkey == "ArrowDown") {
+        let centro = e.y + 20;
+        let punto = this.y - 10;
+        let distance = Math.sqrt((this.x - e.x) ** 2 + (punto - centro) ** 2);
+        distance = Math.floor(distance);
+        if (distance > 9 && distance < 11) {
+          e.y += 1;
+        } else if (distance < 9) {
+        } else {
+          if (antkey == "ArrowRight") {
+            e.x += 1;
+          } else if (antkey == "ArrowLeft") {
+            e.x -= 1;
+          }
+        }
       }
     });
-    c = 0;
   }
+
   ValidationPoint() {
     let d = Math.sqrt(
       (this.eat.ex - this.x) ** 2 + (this.eat.ey - this.y) ** 2
